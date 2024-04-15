@@ -1,15 +1,34 @@
 const AdvancedDataTransform = {
   addValues: (a, b) => {
     if (
-      (typeof a === "number" && typeof b === "number") ||
+      (typeof a === "number" &&
+        typeof b === "number" &&
+        !isNaN(a) &&
+        !isNaN(b)) ||
       (typeof a === "string" && typeof b === "string") ||
       (typeof a === "bigint" && typeof b === "bigint")
     ) {
       return a + b;
     } else if (Array.isArray(a) && Array.isArray(b)) {
-      return [...a, ...b];
+      if (
+        a.every((elem) => typeof elem === typeof a[0]) &&
+        b.every((elem) => typeof elem === typeof a[0])
+      ) {
+        return [...a, ...b];
+      } else {
+        throw new Error("Arrays contain elements of different types.");
+      }
     } else if (typeof a === "object" && typeof b === "object") {
-      return { ...a, ...b };
+      const aValues = Object.values(a);
+      const bValues = Object.values(b);
+      if (
+        aValues.every((value) => typeof value === typeof aValues[0]) &&
+        bValues.every((value) => typeof value === typeof aValues[0])
+      ) {
+        return { ...a, ...b };
+      } else {
+        throw new Error("Objects contain values of different types.");
+      }
     } else {
       throw new Error("Addition not possible for the provided types.");
     }
